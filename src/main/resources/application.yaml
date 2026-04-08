@@ -17,5 +17,10 @@ spring:
     console:
       enabled: true
 
+app:
+  jwt:
+    secret: my-super-secret-key-12345678901234567890
+    expiration: 86400000 # 24h in ms
+
 flyway:
   enabled: true
