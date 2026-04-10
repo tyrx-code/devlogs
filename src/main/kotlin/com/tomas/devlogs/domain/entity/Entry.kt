@@ -25,6 +25,10 @@ open class Entry (
     open val createdAt: Instant = Instant.now(),
     open var updatedAt: Instant? = null,
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    open var user: User? = null,
+
     @OneToMany(
         mappedBy = "entry",
         cascade = [CascadeType.ALL],

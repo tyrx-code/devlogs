@@ -13,12 +13,14 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.security.access.prepost.PreAuthorize
 
 @Tag(name = "Entries", description = "Operations related to dev log entries")
 @RestController
 @RequestMapping("/api/entries")
 class EntryController (private val entryService: EntryService) {
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PostMapping
     fun create(@Valid @RequestBody request: EntryCreateRequest): ResponseEntity<EntryResponse> {
 
@@ -35,6 +37,8 @@ class EntryController (private val entryService: EntryService) {
             ApiResponse(responseCode = "404", description = "Entry not found")
         ]
     )
+
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping
     fun getAll(): ResponseEntity<List<EntryResponse>> {
 
@@ -43,6 +47,7 @@ class EntryController (private val entryService: EntryService) {
         return ResponseEntity.ok(entries)
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/{id}")
     fun getById(@PathVariable id: UUID): ResponseEntity<EntryResponse> {
 
@@ -51,6 +56,7 @@ class EntryController (private val entryService: EntryService) {
         return ResponseEntity.ok(EntryMapper.toResponse(entry))
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: UUID): ResponseEntity<Void> {
 
@@ -58,6 +64,7 @@ class EntryController (private val entryService: EntryService) {
         return ResponseEntity.noContent().build()
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PutMapping("/{id}")
     fun updateEntry(@PathVariable id: UUID, @Valid @RequestBody request: EntryUpdateRequest): ResponseEntity<EntryResponse?> {
 
@@ -65,6 +72,7 @@ class EntryController (private val entryService: EntryService) {
         return ResponseEntity.ok(EntryMapper.toResponse(updated))
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PatchMapping("/{id}")
     fun patchEntry(@PathVariable id: UUID, @RequestBody request: EntryPatchRequest): ResponseEntity<EntryResponse> {
 

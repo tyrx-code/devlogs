@@ -3,6 +3,7 @@ import com.tomas.devlogs.domain.service.AuthService
 import com.tomas.devlogs.dto.AuthResponse
 import com.tomas.devlogs.dto.LoginRequest
 import com.tomas.devlogs.dto.RegisterRequest
+import io.swagger.v3.oas.annotations.Operation
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -16,6 +17,7 @@ class AuthController(
         return authService.register(request)
     }
 
+    @Operation(security = [])
     @PostMapping("/login")
     fun login(@RequestBody request: LoginRequest): AuthResponse {
         return authService.login(request)
