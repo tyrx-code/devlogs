@@ -21,5 +21,8 @@ class User (
     var password: String,
 
     @Enumerated(EnumType.STRING)
-    var role: Role = Role.USER
+    var role: Role = Role.USER,
+
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL])
+    var entries: MutableList<Entry> = mutableListOf()
 )
