@@ -40,9 +40,7 @@ class EntryRepositoryTest @Autowired constructor(
         )
 
         entryRepository.save(entry)
-
         val all = entryRepository.findAll()
-
         Assertions.assertEquals(1, all.size)
         Assertions.assertEquals("First DevLog", all.first().title)
     }
