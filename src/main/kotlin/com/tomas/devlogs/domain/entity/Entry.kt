@@ -7,10 +7,11 @@ import java.time.Instant
 import java.util.UUID
 
 @Entity
-@Table(name = "entries")
+@Table(name = "entries", indexes = [Index(name = "idx_user_id", columnList = "user_id")])
 open class Entry (
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     open var id: UUID? = null,
     @Column(nullable = false)
     open var title: String = "",
@@ -22,8 +23,10 @@ open class Entry (
     open var mood: Mood = Mood.NEUTRAL,
     @Enumerated(EnumType.STRING)
     open var visibility: Visibility = Visibility.PRIVATE,
-    open val createdAt: Instant = Instant.now(),
+    @Column(nullable = false, updatable = false)
+    open var createdAt: Instant? = null,
     open var updatedAt: Instant? = null,
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -36,7 +39,7 @@ open class Entry (
     )
     open var snippets: MutableList<CodeSnippet> = mutableListOf(),
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "entry_tags",
         joinColumns = [JoinColumn(name = "entry_id")],
@@ -51,4 +54,10 @@ open class Entry (
     open fun addTag(tag: Tag) {
         tags.add(tag)
     }
+
+    @PrePersist
+    fun onCreate() { createdAt = Instant.now() }
+
+    @PreUpdate
+    fun onUpdate() { updatedAt = Instant.now()}
 }

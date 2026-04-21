@@ -24,16 +24,19 @@ class SecurityConfig( private val jwtAuthFilter: JwtAuthenticationFilter) {
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
             .csrf { it.disable() }
+            .headers { headers ->
+                headers.frameOptions { it.disable() }
+            }
             .sessionManagement {
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
             .authorizeHttpRequests {
                 it.requestMatchers(
                     "/api/auth/**",
-                    // ✅ Swagger
                     "/v3/api-docs/**",
                     "/swagger-ui/**",
-                    "/swagger-ui.html"
+                    "/swagger-ui.html",
+                    "/h2-console/**"
                 ).permitAll()
                 it.anyRequest().authenticated()
             }

@@ -5,6 +5,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.ManyToMany
 import jakarta.persistence.Table
 import java.util.UUID
 
@@ -13,7 +14,11 @@ import java.util.UUID
 class Tag (
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    val id: UUID? = null,
+    open var id: UUID? = null,
+
     @Column(unique = true, nullable = false)
-    val name: String
+    open var name: String = "",
+
+    @ManyToMany(mappedBy = "tags")
+    var entries: MutableSet<Entry> = mutableSetOf()
 )

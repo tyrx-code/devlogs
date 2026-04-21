@@ -23,6 +23,11 @@ class User (
     @Enumerated(EnumType.STRING)
     var role: Role = Role.USER,
 
-    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL])
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
     var entries: MutableList<Entry> = mutableListOf()
-)
+){
+    fun addEntry(entry: Entry) {
+        entries.add(entry)
+        entry.user = this
+    }
+}
