@@ -34,14 +34,9 @@ class EntryService (
         val currentUser = getCurrentUser()
         entry.user = currentUser
 
-        if(tagNames.isNotEmpty()){
-            for (tagName in tagNames) {
-                val normalized = tagName.trim().lowercase()
-                val existingTag = tagRepository.findByName(normalized)
-                val tag = existingTag ?: tagRepository.save(Tag(name = normalized))
-                entry.tags.add(tag)
-            }
-        }
+        val tags = resolveTags(tagNames)
+        entry.tags.addAll(tags)
+
         return entryRepository.save(entry)
     }
     fun findById(id: UUID): Entry {
@@ -123,16 +118,32 @@ class EntryService (
         return updated
     }
 
-    private fun resolveTags(tagNames: Set<String>): MutableSet<Tag> {
-
-        return tagNames
+    fun resolveTags(tagNames: Set<String>): Set<Tag> {
+        val normalizedNames = tagNames
             .map { it.trim().lowercase() }
-            .toSet() // remove duplicates
-            .map { normalizedName ->
-                tagRepository.findByName(normalizedName)
-                    ?: tagRepository.save(Tag(name = normalizedName))
-            }
-            .toMutableSet()
+            .toSet()
+
+        if (normalizedNames.isEmpty()) return emptySet()
+
+        val existingTags = tagRepository.findAllByNameIn(normalizedNames)
+        val existingMap = existingTags.associateBy { it.name }
+
+        val result = mutableSetOf<Tag>()
+
+        for (name in normalizedNames) {
+            val tag = existingMap[name] ?: Tag(name = name)
+            result.add(tag)
+        }
+
+        val newTags = result.filter { it.id == null }
+
+        try {
+            tagRepository.saveAll(newTags)
+        } catch (ex: Exception) {
+            // fallback for race condition
+            return tagRepository.findAllByNameIn(normalizedNames).toSet()
+        }
+        return result
     }
 
 }

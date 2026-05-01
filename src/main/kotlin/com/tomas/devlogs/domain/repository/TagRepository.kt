@@ -6,4 +6,5 @@ import java.util.UUID
 
 interface TagRepository: JpaRepository<Tag, UUID> {
     fun findByName(name: String): Tag?
+    fun findAllByNameIn(names: Set<String>): List<Tag>
 }
